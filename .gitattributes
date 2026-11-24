@@ -1,0 +1,5 @@
+*.hcl linguist-detectable=true
+*.ctmpl linguist-detectable=true
+*.yaml linguist-detectable=true
+*.yml linguist-detectable=true
+Makefile linguist-vendored=true

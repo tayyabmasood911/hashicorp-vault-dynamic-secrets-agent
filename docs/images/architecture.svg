@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="100%" height="100%" style="background:#ffffff; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <filter id="softShadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.06"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="640" fill="#ffffff"/>
+
+  <!-- Top Title Bar -->
+  <rect x="40" y="24" width="1120" height="60" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" filter="url(#softShadow)"/>
+  <text x="70" y="60" fill="#0f172a" font-size="20" font-weight="700" letter-spacing="0.3">HashiCorp Vault Dynamic Secrets &amp; Agent Sidecar Blueprint</text>
+  <rect x="850" y="40" width="140" height="26" rx="13" fill="#fef2f2" stroke="#ef4444" stroke-width="1"/>
+  <text x="862" y="58" fill="#b91c1c" font-size="11" font-weight="700">DYNAMIC SECRETS</text>
+  <rect x="1000" y="40" width="140" height="26" rx="13" fill="#eff6ff" stroke="#3b82f6" stroke-width="1"/>
+  <text x="1016" y="58" fill="#1d4ed8" font-size="11" font-weight="700">AUTO-AUTH AGENT</text>
+
+  <!-- COLUMN 1: Kubernetes Pod & Sidecar -->
+  <rect x="40" y="110" width="340" height="490" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" filter="url(#softShadow)"/>
+  <rect x="40" y="110" width="340" height="40" rx="8" fill="#f1f5f9"/>
+  <text x="60" y="136" fill="#0284c7" font-size="13" font-weight="700">1. K8S POD &amp; VAULT SIDECAR</text>
+
+  <rect x="60" y="165" width="300" height="95" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="75" y="192" fill="#0f172a" font-size="14" font-weight="600">Vault Agent Container</text>
+  <text x="75" y="214" fill="#64748b" font-size="11">Sidecar pattern • Auto-auth via K8s SA Token</text>
+  <text x="75" y="234" fill="#0284c7" font-size="10" font-weight="600">Method: auth/kubernetes • Role: app-role</text>
+  <text x="75" y="248" fill="#475569" font-size="10">Automated token renewal &amp; lifecycle sync</text>
+
+  <rect x="60" y="275" width="300" height="95" rx="6" fill="#f8fafc" stroke="#bfdbfe" stroke-width="1"/>
+  <text x="75" y="302" fill="#1d4ed8" font-size="13" font-weight="600">Consul Template Engine</text>
+  <text x="75" y="324" fill="#475569" font-size="11">Renders `template-database.ctmpl`</text>
+  <text x="75" y="344" fill="#475569" font-size="11">Outputs `/vault/secrets/database.env`</text>
+  <text x="75" y="360" fill="#16a34a" font-size="10" font-weight="600">Dynamic credentials formatted for app runtime</text>
+
+  <rect x="60" y="385" width="300" height="95" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="75" y="412" fill="#0f172a" font-size="13" font-weight="600">Shared RAM Memory Volume</text>
+  <rect x="75" y="426" width="145" height="24" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="1"/>
+  <text x="85" y="442" fill="#1d4ed8" font-size="10" font-weight="600">emptyDir: medium: Memory</text>
+  <text x="75" y="470" fill="#64748b" font-size="11">Zero disk writes • Ephemeral secrets in RAM</text>
+
+  <rect x="60" y="495" width="300" height="85" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="75" y="522" fill="#0f172a" font-size="13" font-weight="600">Primary App Container</text>
+  <text x="75" y="545" fill="#475569" font-size="11">• Reads `/vault/secrets/database.env` (ro)</text>
+  <text x="75" y="565" fill="#475569" font-size="11">• Receives SIGHUP on secret rotation</text>
+
+  <!-- COLUMN 2: Vault Server & Dynamic Secrets Engine -->
+  <rect x="410" y="110" width="370" height="490" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" filter="url(#softShadow)"/>
+  <rect x="410" y="110" width="370" height="40" rx="8" fill="#f1f5f9"/>
+  <text x="430" y="136" fill="#dc2626" font-size="13" font-weight="700">2. VAULT SERVER &amp; SECRETS ENGINE</text>
+
+  <rect x="430" y="165" width="330" height="90" rx="6" fill="#f8fafc" stroke="#fca5a5" stroke-width="1"/>
+  <text x="445" y="192" fill="#b91c1c" font-size="13" font-weight="600">Kubernetes Auth Method</text>
+  <text x="445" y="214" fill="#475569" font-size="11">Validates ServiceAccount JWT with K8s API</text>
+  <text x="445" y="234" fill="#16a34a" font-size="10" font-weight="600">Mutual TLS connection to Vault Cluster :8200</text>
+  <text x="445" y="248" fill="#64748b" font-size="10">Issues scoped, short-lived client token</text>
+
+  <rect x="430" y="270" width="330" height="105" rx="6" fill="#f8fafc" stroke="#fed7aa" stroke-width="1"/>
+  <text x="445" y="297" fill="#c2410c" font-size="13" font-weight="600">Dynamic Database Secrets Engine</text>
+  <text x="445" y="320" fill="#15803d" font-size="11" font-weight="600">• Mount: `database/creds/readonly`</text>
+  <text x="445" y="340" fill="#15803d" font-size="11" font-weight="600">• Generates unique ephemeral DB credentials</text>
+  <text x="445" y="360" fill="#475569" font-size="11">• Format: `v-token-app-role-XXXX-XXXX`</text>
+
+  <rect x="430" y="390" width="330" height="95" rx="6" fill="#f8fafc" stroke="#fed7aa" stroke-width="1"/>
+  <text x="445" y="417" fill="#c2410c" font-size="13" font-weight="600">Automated Lease Lifecycle</text>
+  <text x="445" y="440" fill="#15803d" font-size="11" font-weight="600">• Default TTL: 1h • Max TTL: 24h</text>
+  <text x="445" y="460" fill="#475569" font-size="11">• Background lease renewal keep-alive loop</text>
+  <text x="445" y="478" fill="#b91c1c" font-size="10" font-weight="600">Automatic credential revocation upon expiry</text>
+
+  <rect x="430" y="500" width="330" height="80" rx="6" fill="#f8fafc" stroke="#c7d2fe" stroke-width="1"/>
+  <text x="445" y="527" fill="#4338ca" font-size="13" font-weight="600">Tamper-Proof Audit Logging</text>
+  <text x="445" y="549" fill="#475569" font-size="11">• Full audit trail of every secret access &amp; renewal</text>
+  <text x="445" y="569" fill="#475569" font-size="11">• Export to SIEM (Datadog / Splunk / Elastic)</text>
+
+  <!-- COLUMN 3: Target Database & Zero-Trust -->
+  <rect x="810" y="110" width="350" height="490" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" filter="url(#softShadow)"/>
+  <rect x="810" y="110" width="350" height="40" rx="8" fill="#f1f5f9"/>
+  <text x="830" y="136" fill="#059669" font-size="13" font-weight="700">3. TARGET DATABASE &amp; ZERO-TRUST</text>
+
+  <rect x="830" y="165" width="310" height="95" rx="6" fill="#f8fafc" stroke="#a7f3d0" stroke-width="1"/>
+  <text x="845" y="192" fill="#065f46" font-size="13" font-weight="600">Managed PostgreSQL Cluster</text>
+  <text x="845" y="214" fill="#475569" font-size="11">• Vault executes `CREATE ROLE ... WITH LOGIN`</text>
+  <text x="845" y="234" fill="#059669" font-size="10" font-weight="600">Least-privilege SELECT permissions only</text>
+  <text x="845" y="250" fill="#475569" font-size="10">Automatic DROP ROLE on lease expiration</text>
+
+  <rect x="830" y="275" width="310" height="95" rx="6" fill="#f8fafc" stroke="#bae6fd" stroke-width="1"/>
+  <text x="845" y="302" fill="#0369a1" font-size="13" font-weight="600">Elimination of Static Credentials</text>
+  <text x="845" y="325" fill="#475569" font-size="11">• Zero passwords stored in Git, Helm, or CI/CD</text>
+  <text x="845" y="345" fill="#475569" font-size="11">• Stolen credentials become useless after 1 hour</text>
+  <text x="845" y="362" fill="#475569" font-size="11">• No manual credential rotation procedures required</text>
+
+  <rect x="830" y="385" width="310" height="95" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="845" y="412" fill="#0f172a" font-size="13" font-weight="600">Vault Injector Mutation Webhook</text>
+  <text x="845" y="435" fill="#475569" font-size="11">• Annotation-driven injection alternative</text>
+  <text x="845" y="455" fill="#475569" font-size="11">• `vault.hashicorp.com/agent-inject: "true"`</text>
+  <text x="845" y="472" fill="#475569" font-size="11">• Declarative secret rendering via annotations</text>
+
+  <rect x="830" y="495" width="310" height="85" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="845" y="522" fill="#0f172a" font-size="13" font-weight="600">Compliance &amp; Governance</text>
+  <text x="845" y="545" fill="#475569" font-size="11">• Meets SOC 2 Type II, PCI-DSS Req 8 &amp; ISO 27001</text>
+  <text x="845" y="565" fill="#475569" font-size="11">• Micro-segmentation of data store access</text>
+</svg>

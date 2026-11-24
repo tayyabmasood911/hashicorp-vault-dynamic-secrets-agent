@@ -1,4 +1,10 @@
 {{ with secret "database/creds/readonly" }}
 DB_USER="{{ .Data.username }}"
 DB_PASS="{{ .Data.password }}"
+DB_HOST="postgres.database.svc.cluster.local"
+DB_PORT="5432"
+DB_NAME="production_db"
+DATABASE_URL="postgresql://{{ .Data.username }}:{{ .Data.password }}@postgres.database.svc.cluster.local:5432/production_db?sslmode=verify-full"
+LEASE_ID="{{ .LeaseID }}"
+LEASE_DURATION="{{ .LeaseDuration }}"
 {{ end }}

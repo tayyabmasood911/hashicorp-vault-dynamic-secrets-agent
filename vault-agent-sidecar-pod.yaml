@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: default
+  labels:
+    app: payment-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      serviceAccountName: vault-auth-sa
+      volumes:
+      - name: vault-secrets
+        emptyDir:
+          medium: Memory
+      - name: vault-config
+        configMap:
+          name: vault-agent-config
+      containers:
+      # Vault Agent Sidecar
+      - name: vault-agent
+        image: hashicorp/vault:1.15.4
+        args: ["agent", "-config=/etc/vault/vault-agent-config.hcl"]
+        volumeMounts:
+        - name: vault-config
+          mountPath: /etc/vault
+        - name: vault-secrets
+          mountPath: /vault/secrets
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 100
+          allowPrivilegeEscalation: false
+      # Primary Application Container
+      - name: app
+        image: public.ecr.aws/docker/library/python:3.11-slim
+        command: ["sh", "-c", "while true; do [ -f /vault/secrets/database.env ] && cat /vault/secrets/database.env; sleep 10; done"]
+        volumeMounts:
+        - name: vault-secrets
+          mountPath: /vault/secrets
+          readOnly: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi

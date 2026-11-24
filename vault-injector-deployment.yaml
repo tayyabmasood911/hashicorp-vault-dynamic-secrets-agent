@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service-injected
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "app-role"
+        vault.hashicorp.com/agent-pre-populate-only: "false"
+        vault.hashicorp.com/agent-inject-secret-database.env: "database/creds/readonly"
+        vault.hashicorp.com/agent-inject-template-database.env: |
+          {{- with secret "database/creds/readonly" -}}
+          export DB_USER="{{ .Data.username }}"
+          export DB_PASS="{{ .Data.password }}"
+          export DATABASE_URL="postgresql://{{ .Data.username }}:{{ .Data.password }}@postgres:5432/orders?sslmode=require"
+          {{- end -}}
+    spec:
+      serviceAccountName: vault-auth-sa
+      containers:
+      - name: order-service
+        image: public.ecr.aws/docker/library/python:3.11-slim
+        command: ["sh", "-c", "source /vault/secrets/database.env 2>/dev/null || true; sleep 3600"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
